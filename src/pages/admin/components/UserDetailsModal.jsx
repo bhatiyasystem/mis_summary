@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { X, Loader2, Filter, Calendar, ChevronDown } from "lucide-react";
+import { X, Loader2, Filter, Calendar, ChevronDown, Printer } from "lucide-react";
 
 const UserDetailsModal = ({
     selectedUserDetails,
@@ -11,6 +11,370 @@ const UserDetailsModal = ({
 }) => {
     const [timeFilter, setTimeFilter] = React.useState("all");
     const [statusFilter, setStatusFilter] = React.useState("all");
+
+    const handlePrint = () => {
+        if (!selectedUserDetails) return;
+
+        const printWindow = window.open('', '_blank');
+        const tasks = selectedUserDetails.tasks || [];
+        const today = new Date().toLocaleDateString('en-GB', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        const formatPercent = (val) => {
+            if (val === undefined || val === null || val === '') return '0%';
+            const str = String(val).trim();
+            if (str.endsWith('%')) return str;
+            return `${str}%`;
+        };
+
+        const html = `
+            <html>
+                <head>
+                    <title>Performance Report - ${selectedUserDetails.name}</title>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+                        
+                        body { 
+                            font-family: 'Inter', sans-serif; 
+                            padding: 30px; 
+                            color: #1e293b;
+                            line-height: 1.4;
+                            background: #fff;
+                        }
+                        
+                        .report-container {
+                            max-width: 1000px;
+                            margin: 0 auto;
+                        }
+
+                        .report-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            border-bottom: 3px solid #2563eb;
+                            padding-bottom: 15px;
+                            margin-bottom: 25px;
+                        }
+
+                        .brand {
+                            display: flex;
+                            flex-direction: column;
+                        }
+
+                        .brand-name {
+                            font-size: 32px;
+                            font-weight: 800;
+                            color: #2563eb;
+                            letter-spacing: -0.04em;
+                            margin: 0;
+                            line-height: 1;
+                        }
+
+                        .brand-sub {
+                            font-size: 11px;
+                            font-weight: 700;
+                            color: #64748b;
+                            text-transform: uppercase;
+                            letter-spacing: 0.15em;
+                            margin-top: 4px;
+                        }
+
+                        .report-title-box {
+                            text-align: right;
+                        }
+
+                        .report-title {
+                            font-size: 13px;
+                            font-weight: 800;
+                            color: #0f172a;
+                            margin: 0;
+                            text-transform: uppercase;
+                            letter-spacing: 0.05em;
+                        }
+
+                        .report-date {
+                            font-size: 11px;
+                            color: #64748b;
+                            margin-top: 4px;
+                            font-weight: 500;
+                        }
+
+                        .emp-card {
+                            background: #f8fafc;
+                            border-radius: 10px;
+                            padding: 20px;
+                            display: flex;
+                            align-items: center;
+                            gap: 20px;
+                            margin-bottom: 25px;
+                            border: 1px solid #e2e8f0;
+                        }
+
+                        .emp-photo {
+                            width: 70px;
+                            height: 70px;
+                            border-radius: 50%;
+                            object-fit: cover;
+                            border: 2px solid #fff;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                        }
+
+                        .emp-details h2 {
+                            margin: 0;
+                            font-size: 22px;
+                            font-weight: 700;
+                            color: #0f172a;
+                            letter-spacing: -0.02em;
+                        }
+
+                        .emp-details p {
+                            margin: 2px 0 0;
+                            font-size: 14px;
+                            color: #64748b;
+                            font-weight: 500;
+                        }
+
+                        .stats-grid {
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: 12px;
+                            margin-bottom: 25px;
+                        }
+
+                        .stat-item {
+                            background: #fff;
+                            border: 1px solid #e2e8f0;
+                            padding: 12px;
+                            border-radius: 8px;
+                            text-align: center;
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                        }
+
+                        .stat-label {
+                            font-size: 9px;
+                            font-weight: 800;
+                            color: #64748b;
+                            text-transform: uppercase;
+                            margin-bottom: 4px;
+                            letter-spacing: 0.05em;
+                        }
+
+                        .stat-value {
+                            font-size: 18px;
+                            font-weight: 800;
+                            color: #1e293b;
+                        }
+
+                        .stat-value.highlight {
+                            color: #2563eb;
+                        }
+
+                        .section-title {
+                            font-size: 12px;
+                            font-weight: 800;
+                            color: #475569;
+                            text-transform: uppercase;
+                            letter-spacing: 0.05em;
+                            margin-bottom: 12px;
+                            border-left: 4px solid #2563eb;
+                            padding-left: 10px;
+                        }
+
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 5px;
+                            font-size: 10.5px;
+                            table-layout: fixed;
+                        }
+
+                        th {
+                            background-color: #f1f5f9;
+                            color: #475569;
+                            font-weight: 700;
+                            text-transform: uppercase;
+                            font-size: 9px;
+                            letter-spacing: 0.025em;
+                            padding: 10px 6px;
+                            text-align: center;
+                            border: 1px solid #e2e8f0;
+                            vertical-align: middle;
+                        }
+
+                        th:first-child { text-align: left; width: 25%; }
+                        th.num-col { width: 9%; }
+                        th.red-header { background-color: #fee2e2; color: #991b1b; }
+
+                        td {
+                            padding: 10px 6px;
+                            border: 1px solid #e2e8f0;
+                            color: #334155;
+                            text-align: center;
+                            vertical-align: middle;
+                            word-wrap: break-word;
+                        }
+
+                        td:first-child { text-align: left; font-weight: 500; }
+
+                        .badge {
+                            display: inline-block;
+                            padding: 2px 6px;
+                            border-radius: 4px;
+                            font-weight: 700;
+                        }
+
+                        .badge-blue { background: #dbeafe; color: #1e40af; }
+                        .badge-red { background: #fee2e2; color: #991b1b; }
+                        .badge-green { background: #dcfce7; color: #166534; }
+
+                        .red-col {
+                            background-color: #fff1f2 !important;
+                            color: #991b1b;
+                            font-weight: 700;
+                        }
+
+                        .footer {
+                            margin-top: 40px;
+                            padding-top: 15px;
+                            border-top: 1px solid #e2e8f0;
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            font-size: 9px;
+                            color: #94a3b8;
+                            font-weight: 500;
+                        }
+
+                        .sign-section {
+                            display: flex;
+                            justify-content: space-between;
+                            margin-top: 50px;
+                            padding: 0 40px;
+                        }
+
+                        .signature-line {
+                            width: 180px;
+                            border-top: 1.5px solid #334155;
+                            padding-top: 8px;
+                            text-align: center;
+                            font-weight: 700;
+                            font-size: 11px;
+                            color: #1e293b;
+                        }
+
+                        @media print {
+                            body { padding: 0; }
+                            .report-container { width: 100%; max-width: none; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="report-container">
+                        <div class="report-header">
+                            <div class="brand">
+                                <h1 class="brand-name">ACEMARK</h1>
+                                <span class="brand-sub">STATIONERS & SYSTEMS</span>
+                            </div>
+                            <div class="report-title-box">
+                                <h2 class="report-title">Employee Performance Audit</h2>
+                                <p class="report-date">Audit Date: ${today}</p>
+                            </div>
+                        </div>
+
+                        <div class="emp-card">
+                            <img src="${selectedUserDetails.image}" alt="${selectedUserDetails.name}" class="emp-photo">
+                            <div class="emp-details">
+                                <h2>${selectedUserDetails.name}</h2>
+                                <p>${selectedUserDetails.department || 'Operations Management'}</p>
+                                <p style="font-size: 12px; color: #94a3b8;">User ID: ${selectedUserDetails.id || 'N/A'}</p>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Performance Score</span>
+                                <span class="stat-value highlight">${selectedUserDetails.score || 0}%</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Weekly Done</span>
+                                <span class="stat-value">${formatPercent(selectedUserDetails.weeklyWorkDone)}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">On-Time %</span>
+                                <span class="stat-value">${formatPercent(selectedUserDetails.weeklyWorkDoneOnTime)}</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Pending Backlog</span>
+                                <span class="stat-value" style="color: #ef4444;">${selectedUserDetails.allPendingTillDate || 0}</span>
+                            </div>
+                        </div>
+
+                        <h3 class="section-title">Individual Task Breakdown</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>FMS & TASK DESCRIPTION</th>
+                                    <th class="num-col">TARGET</th>
+                                    <th class="num-col">ACTUAL</th>
+                                    <th class="num-col">DONE %</th>
+                                    <th class="num-col">LATE %</th>
+                                    <th class="num-col red-header">PLANNED NOT DONE</th>
+                                    <th class="num-col red-header">PLANNED LATE %</th>
+                                    <th class="num-col red-header">COMMITMENT</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tasks.map(task => {
+                                    const achievement = parseFloat(task.totalAchievement) || 0;
+                                    const target = parseFloat(task.target) || 0;
+                                    const isTargetMet = achievement >= target && target > 0;
+                                    
+                                    return `
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight: 700; color: #0f172a; font-size: 11px;">${task.fmsName}</div>
+                                            <div style="font-size: 9px; color: #64748b; margin-top: 1px;">${task.taskName}</div>
+                                        </td>
+                                        <td><span class="badge ${target > 0 ? 'badge-blue' : ''}">${task.target}</span></td>
+                                        <td><span class="badge ${isTargetMet ? 'badge-green' : (achievement > 0 ? 'badge-blue' : 'badge-red')}">${task.totalAchievement}</span></td>
+                                        <td>${formatPercent(task.workNotDone)}</td>
+                                        <td>${formatPercent(task.workNotDoneOnTime)}</td>
+                                        <td class="red-col">${formatPercent(selectedUserDetails.plannedWorkNotDone)}</td>
+                                        <td class="red-col">${formatPercent(selectedUserDetails.plannedWorkNotDoneOnTime)}</td>
+                                        <td class="red-col">${selectedUserDetails.commitment || 0}</td>
+                                    </tr>
+                                `}).join('')}
+                            </tbody>
+                        </table>
+
+                        <div class="sign-section">
+                            <div class="signature-line">Supervisor Signature</div>
+                            <div class="signature-line">Operations Manager</div>
+                        </div>
+
+                        <div class="footer">
+                            <span>System Auth: MIS-RPT-${new Date().getTime().toString().slice(-8)}</span>
+                            <span>Report Generated by MIS Intelligence Portal • Acemark Stationers</span>
+                            <span>Page 1 of 1</span>
+                        </div>
+                    </div>
+                </body>
+            </html>
+        `;
+
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 800);
+    };
 
     const parseDate = (dateStr) => {
         if (!dateStr) return null;
@@ -115,12 +479,21 @@ const UserDetailsModal = ({
                                     </p>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setSelectedUserDetails(null)}
-                                className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
-                            >
-                                <X className="w-5 h-5 text-gray-600" />
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={handlePrint}
+                                    className="flex items-center gap-2 px-3 py-1.5 bg-blue-600 text-white rounded-md text-xs font-semibold hover:bg-blue-700 transition-colors shadow-sm"
+                                >
+                                    <Printer className="w-4 h-4" />
+                                    <span>Print Tasks</span>
+                                </button>
+                                <button
+                                    onClick={() => setSelectedUserDetails(null)}
+                                    className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                                >
+                                    <X className="w-5 h-5 text-gray-600" />
+                                </button>
+                            </div>
                         </div>
 
                         {/* Scrollable Content */}

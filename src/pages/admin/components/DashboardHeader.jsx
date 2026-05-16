@@ -1,8 +1,9 @@
 import React from "react";
 import { Download } from "lucide-react";
-import { generateDashboardJPEG } from "../../../utils/imageGenerator";
+import { generateDashboardPDF } from "../../../utils/pdfGenerator";
 
 const DashboardHeader = ({
+    user,
     ALL_COLUMNS,
     visibleColumns,
     filteredEmployees,
@@ -12,10 +13,12 @@ const DashboardHeader = ({
     pendingTasks,
     departmentScores = [],
 }) => {
+    const isAdmin = user?.role === 'admin';
+
     return (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <h1 className="text-lg md:text-2xl font-bold text-gray-800">
-                Admin Dashboard
+                {isAdmin ? "Admin Dashboard" : "Employee Dashboard"}
             </h1>
             <button
                 onClick={() => {
@@ -29,7 +32,7 @@ const DashboardHeader = ({
                         nextWeekPlannedWorkNotDoneOnTime: employeeCommitments[emp.id]?.nextWeekPlannedWorkNotDoneOnTime || emp.nextWeekPlannedWorkNotDoneOnTime,
                         nextWeekCommitment: employeeCommitments[emp.id]?.commitment || emp.nextWeekCommitment
                     }));
-                    generateDashboardJPEG(
+                    generateDashboardPDF(
                         visibleColsList,
                         exportData,
                         topBestPerformers,
@@ -41,7 +44,7 @@ const DashboardHeader = ({
                 className="w-full sm:w-auto inline-flex items-center justify-center px-3 py-2 border border-transparent rounded-md shadow-sm text-xs md:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
             >
                 <Download className="h-4 w-4 mr-2" />
-                Download Report
+                Download PDF Report
             </button>
         </div>
     );

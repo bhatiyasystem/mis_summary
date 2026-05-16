@@ -1011,6 +1011,7 @@ Acemark Stationers.`;
     <div className="space-y-4 lg:space-y-6 p-2 md:p-4">
       {/* Header */}
       <DashboardHeader
+        user={user}
         ALL_COLUMNS={ALL_COLUMNS}
         visibleColumns={visibleColumns}
         filteredEmployees={filteredEmployees}
@@ -1078,21 +1079,23 @@ Acemark Stationers.`;
         topBestTotalData={topBestTotalData}
       />
 
-      {/* Department Scores */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 lg:p-8 mt-6">
-        <h2 className="text-sm md:text-base font-bold text-gray-800 flex items-center gap-2 mb-6">
-          <div className="w-1.5 h-6 bg-purple-500 rounded-full" />
-          Department Scores
-        </h2>
-        <div className="h-[400px] md:h-[500px]">
-          <DepartmentScoreChart
-            labels={departmentScoresLabels}
-            pendingData={departmentScoresPending}
-            notDoneData={departmentScoresData}
-            notDoneOnTimeData={departmentScoresNotDoneOnTime}
-          />
+      {/* Department Scores - Admin Only */}
+      {user?.role === 'admin' && (
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 lg:p-8 mt-6">
+          <h2 className="text-sm md:text-base font-bold text-gray-800 flex items-center gap-2 mb-6">
+            <div className="w-1.5 h-6 bg-purple-500 rounded-full" />
+            Department Scores
+          </h2>
+          <div className="h-[400px] md:h-[500px]">
+            <DepartmentScoreChart
+              labels={departmentScoresLabels}
+              pendingData={departmentScoresPending}
+              notDoneData={departmentScoresData}
+              notDoneOnTimeData={departmentScoresNotDoneOnTime}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
