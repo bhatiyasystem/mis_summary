@@ -25,7 +25,13 @@ const UserDetailsModal = ({
 
         const formatPercent = (val) => {
             if (val === undefined || val === null || val === '') return '0%';
-            const str = String(val).trim();
+            let str = String(val).trim();
+            const num = parseFloat(str);
+            if (!isNaN(num)) {
+                // Round to 2 decimal places if it's a float
+                const rounded = num % 1 === 0 ? num : num.toFixed(2);
+                return `${rounded}%`;
+            }
             if (str.endsWith('%')) return str;
             return `${str}%`;
         };
@@ -429,6 +435,13 @@ const UserDetailsModal = ({
         return "hover:bg-gray-50";
     };
 
+    const formatDecimal = (val) => {
+        if (val === undefined || val === null || val === "") return "0";
+        const num = parseFloat(val);
+        if (isNaN(num)) return val;
+        return num % 1 === 0 ? num : num.toFixed(2);
+    };
+
     const filteredRows = React.useMemo(() => {
         if (!activeDrillDown || !activeDrillDown.rows) return [];
 
@@ -543,8 +556,8 @@ const UserDetailsModal = ({
                                                                     {task.totalAchievement}
                                                                 </span>
                                                             </td>
-                                                            <td className="px-3 py-2 text-xs text-gray-900">{task.workNotDone}</td>
-                                                            <td className="px-3 py-2 text-xs text-gray-900">{task.workNotDoneOnTime}</td>
+                                                            <td className="px-3 py-2 text-xs text-gray-900">{formatDecimal(task.workNotDone)}</td>
+                                                            <td className="px-3 py-2 text-xs text-gray-900">{formatDecimal(task.workNotDoneOnTime)}</td>
                                                             <td className="px-3 py-2 text-xs text-gray-900">{task.allPendingTillDate}</td>
                                                         </tr>
                                                     ))
@@ -584,11 +597,11 @@ const UserDetailsModal = ({
                                                         </div>
                                                         <div>
                                                             <p className="text-[10px] text-gray-400 font-medium uppercase">% Not Done</p>
-                                                            <p className="text-xs text-gray-700 font-semibold">{task.workNotDone}</p>
+                                                            <p className="text-xs text-gray-700 font-semibold">{formatDecimal(task.workNotDone)}</p>
                                                         </div>
                                                         <div>
                                                             <p className="text-[10px] text-gray-400 font-medium uppercase">% Late</p>
-                                                            <p className="text-xs text-gray-700 font-semibold">{task.workNotDoneOnTime}</p>
+                                                            <p className="text-xs text-gray-700 font-semibold">{formatDecimal(task.workNotDoneOnTime)}</p>
                                                         </div>
                                                     </div>
                                                 </div>
