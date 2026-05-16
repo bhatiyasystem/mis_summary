@@ -155,7 +155,7 @@ export const generateDashboardPDF = async (visibleColumnsList, filteredEmployees
       </tbody>
     </table>
     <div style="margin-top: 30px; text-align: center; color: #9ca3af; font-size: 10px;">
-      © ${new Date().getFullYear()} MIS System Dashboard. Information exported for internal use.
+      © ${new Date().getFullYear()} MIS System Dashboard. Powered by Botivate.
     </div>
   `;
 
