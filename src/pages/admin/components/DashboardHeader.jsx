@@ -18,7 +18,7 @@ const DashboardHeader = ({
     return (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <h1 className="text-lg md:text-2xl font-bold text-gray-800">
-                {isAdmin ? "Admin Dashboard" : "Employee Dashboard"}
+                {isAdmin ? "Admin Dashboard" : (user?.role === 'hod' ? "HOD Dashboard" : "Employee Dashboard")}
             </h1>
             <button
                 onClick={() => {

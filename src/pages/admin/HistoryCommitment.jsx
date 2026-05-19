@@ -63,16 +63,22 @@ const AdminHistoryCommitment = () => {
                     })).filter(r => r.name.trim() !== "");
 
                     const isAdmin = user && (user.role === 'admin' || user.role === 'superadmin');
+                    const isHod = user && user.role === 'hod';
                     const lowerName = (user?.name || "").toLowerCase().trim();
                     const lowerId = (user?.id || "").toLowerCase().trim();
 
                     // Filter based on role (Admin/Superadmin sees all, HOD sees self + reportees, Ordinary User sees self only)
                     const finalRecords = isAdmin
                         ? parsed
-                        : parsed.filter(r => {
+                        : isHod
+                        ? parsed.filter(r => {
                             const empLowerName = r.name.toLowerCase().trim();
                             const empManager = reportedByMap[empLowerName] || "";
                             return empLowerName === lowerName || empManager === lowerName || empManager === lowerId;
+                          })
+                        : parsed.filter(r => {
+                            const empLowerName = r.name.toLowerCase().trim();
+                            return empLowerName === lowerName;
                           });
 
                     setRecords(finalRecords);

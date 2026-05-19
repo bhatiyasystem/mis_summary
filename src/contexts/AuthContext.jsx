@@ -50,12 +50,23 @@ export function AuthProvider({ children }) {
 
               // Sync role as well from Column H (index 7)
               const rawRole = String(userRow[7] || "").trim().toLowerCase();
+              const designation = String(userRow[3] || "").toLowerCase();
               const userId = String(userRow[5] || "").trim().toLowerCase();
               
               let syncedRole = prevUser.role;
               if (userId === 'admin' || rawRole === 'superadmin') syncedRole = 'superadmin';
               else if (rawRole === 'admin') syncedRole = 'admin';
+              else if (rawRole === 'hod') syncedRole = 'hod';
               else if (rawRole === 'user') syncedRole = 'user';
+              else {
+                if (designation.includes('hod') || designation.includes('head of department') || designation.includes('head')) {
+                  syncedRole = 'hod';
+                } else if (designation.includes('admin') || designation.includes('manager')) {
+                  syncedRole = 'admin';
+                } else {
+                  syncedRole = 'user';
+                }
+              }
 
               const freshReportedBy = userRow[9] || "";
 
@@ -118,11 +129,19 @@ export function AuthProvider({ children }) {
             role = 'superadmin';
           } else if (rawRole === 'admin') {
             role = 'admin';
+          } else if (rawRole === 'hod') {
+            role = 'hod';
           } else if (rawRole === 'user') {
             role = 'user';
           } else {
-            // Fallback to designation if Column H is not explicitly 'Admin' or 'User'
-            role = (designation.includes('admin') || designation.includes('manager')) ? 'admin' : 'user';
+            // Fallback to designation if Column H is not explicitly 'Admin', 'User' or 'HOD'
+            if (designation.includes('hod') || designation.includes('head of department') || designation.includes('head')) {
+              role = 'hod';
+            } else if (designation.includes('admin') || designation.includes('manager')) {
+              role = 'admin';
+            } else {
+              role = 'user';
+            }
           }
 
           // Get rowIndex (1-based)

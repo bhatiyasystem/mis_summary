@@ -105,7 +105,7 @@ function RequireAuth({ children, role }) {
     return <Navigate to="/user" replace />;
   }
 
-  if (role === 'user' && user.role !== 'user' && !isAdminOrSuper) {
+  if (role === 'user' && user.role !== 'user' && user.role !== 'hod' && !isAdminOrSuper) {
     return <Navigate to="/login" replace />;
   }
 

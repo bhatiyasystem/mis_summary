@@ -370,16 +370,22 @@ const AdminDashboard = () => {
             });
 
           const isAdmin = user && (user.role === 'admin' || user.role === 'superadmin');
+          const isHod = user && user.role === 'hod';
           const lowerName = (user?.name || "").toLowerCase().trim();
           const lowerId = (user?.id || "").toLowerCase().trim();
 
           // Filter data based on user permission level (Admin/Superadmin sees all, HOD sees self + reportees, Ordinary User sees self only)
           const finalData = isAdmin
             ? parsedData
-            : parsedData.filter(emp => {
+            : isHod
+            ? parsedData.filter(emp => {
                 const empLowerName = emp.name.toLowerCase().trim();
                 const empManager = reportedByMap[empLowerName] || "";
                 return empLowerName === lowerName || empManager === lowerName || empManager === lowerId;
+              })
+            : parsedData.filter(emp => {
+                const empLowerName = emp.name.toLowerCase().trim();
+                return empLowerName === lowerName;
               });
 
           setSheetEmployees(finalData);
@@ -1035,6 +1041,7 @@ Acemark Stationers.`;
 
       {/* Employee List */}
       <EmployeeListSection
+        user={user}
         ALL_COLUMNS={ALL_COLUMNS}
         visibleColumns={visibleColumns}
         showColumnFilter={showColumnFilter}
