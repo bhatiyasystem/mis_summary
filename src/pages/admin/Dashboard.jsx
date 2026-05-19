@@ -236,20 +236,23 @@ const AdminDashboard = () => {
           setDepartmentScores(parsedDeptScores);
         }
 
-        // Build image and designation maps from Master sheet (Column A: Name, Column D: Designation, Column E: Image)
+        // Build image and designation maps from Master sheet (Column A: Name, Column D: Designation, Column E: Image, Column J: Reported By)
         const imageMap = {};
         const designationMap = {};
         const phoneMap = {};
+        const reportedByMap = {};
         if (masterResult.success && Array.isArray(masterResult.data)) {
           masterResult.data.slice(1).forEach(row => {
             const name = row[0] ? String(row[0]).trim().toLowerCase() : "";
             const designation = row[3] ? String(row[3]).trim() : "";
             const imageUrl = row[4];
             const phone = row[1] ? String(row[1]).trim() : ""; // Column B (index 1)
+            const reportedBy = row[9] ? String(row[9]).trim().toLowerCase() : "";
             if (name) {
               if (imageUrl) imageMap[name] = imageUrl;
               if (designation) designationMap[name] = designation;
               if (phone) phoneMap[name] = phone;
+              if (reportedBy) reportedByMap[name] = reportedBy;
             }
           });
         }
@@ -366,10 +369,18 @@ const AdminDashboard = () => {
               };
             });
 
-          // Filter data if user is not an admin
-          const finalData = user && user.role === 'admin'
+          const isAdmin = user && (user.role === 'admin' || user.role === 'superadmin');
+          const lowerName = (user?.name || "").toLowerCase().trim();
+          const lowerId = (user?.id || "").toLowerCase().trim();
+
+          // Filter data based on user permission level (Admin/Superadmin sees all, HOD sees self + reportees, Ordinary User sees self only)
+          const finalData = isAdmin
             ? parsedData
-            : parsedData.filter(emp => emp.name.toLowerCase() === (user?.name || "").toLowerCase());
+            : parsedData.filter(emp => {
+                const empLowerName = emp.name.toLowerCase().trim();
+                const empManager = reportedByMap[empLowerName] || "";
+                return empLowerName === lowerName || empManager === lowerName || empManager === lowerId;
+              });
 
           setSheetEmployees(finalData);
         } else {
@@ -1080,7 +1091,7 @@ Acemark Stationers.`;
       />
 
       {/* Department Scores - Admin Only */}
-      {user?.role === 'admin' && (
+      {(user?.role === 'admin' || user?.role === 'superadmin') && (
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 lg:p-8 mt-6">
           <h2 className="text-sm md:text-base font-bold text-gray-800 flex items-center gap-2 mb-6">
             <div className="w-1.5 h-6 bg-purple-500 rounded-full" />

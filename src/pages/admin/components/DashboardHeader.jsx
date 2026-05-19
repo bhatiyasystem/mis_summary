@@ -13,7 +13,7 @@ const DashboardHeader = ({
     pendingTasks,
     departmentScores = [],
 }) => {
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
     return (
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">

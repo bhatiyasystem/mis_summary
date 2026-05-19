@@ -15,7 +15,7 @@ const ChartsGrid = ({
     topBestLabels,
     topBestTotalData,
 }) => {
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = user?.role === 'admin' || user?.role === 'superadmin';
 
     return (
         <div className={`grid grid-cols-1 ${isAdmin ? 'lg:grid-cols-2 xl:grid-cols-3' : ''} gap-4 lg:gap-6`}>

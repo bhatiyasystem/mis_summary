@@ -189,10 +189,12 @@ const KpiKra = () => {
           setUserDept(dept);
           // Column H (index 7) for Role
           const role = String(userRow[7] || '').trim().toLowerCase();
-          setUserRole(role);
+          const userId = String(userRow[5] || '').trim().toLowerCase();
+          const finalRole = (userId === 'admin' || role === 'superadmin') ? 'superadmin' : role;
+          setUserRole(finalRole);
 
-          // If not admin, fetch data from the Designation Brief sheet and Database sheet
-          if (role !== 'admin') {
+          // If not admin/superadmin, fetch data from the Designation Brief sheet and Database sheet
+          if (finalRole !== 'admin' && finalRole !== 'superadmin') {
             fetchDashboardData('Designation Brief', dept);
             fetchDashboardData('Database', dept);
           } else {
@@ -215,7 +217,7 @@ const KpiKra = () => {
 
   // Auto-submit 'All' for admins on initial load to show all data
   useEffect(() => {
-    if (userRole === 'admin') {
+    if (userRole === 'admin' || userRole === 'superadmin') {
       handleSubmit('All');
     }
   }, [userRole]);
@@ -317,7 +319,7 @@ const KpiKra = () => {
               <Download className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
               Download PDF
             </button>
-            {userRole === 'admin' && (
+            {(userRole === 'admin' || userRole === 'superadmin') && (
               <>
                 <div className="relative" ref={dropdownRef}>
                   <button

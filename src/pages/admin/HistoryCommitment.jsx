@@ -21,8 +21,23 @@ const AdminHistoryCommitment = () => {
                     return;
                 }
 
-                const response = await fetch(`${scriptUrl}?sheet=Records`);
-                const result = await response.json();
+                const [recordsResponse, masterResponse] = await Promise.all([
+                    fetch(`${scriptUrl}?sheet=Records`),
+                    fetch(`${scriptUrl}?sheet=Master`)
+                ]);
+                const result = await recordsResponse.json();
+                const masterResult = await masterResponse.json();
+
+                const reportedByMap = {};
+                if (masterResult.success && Array.isArray(masterResult.data)) {
+                    masterResult.data.slice(1).forEach(row => {
+                        const name = row[0] ? String(row[0]).trim().toLowerCase() : "";
+                        const reportedBy = row[9] ? String(row[9]).trim().toLowerCase() : "";
+                        if (name && reportedBy) {
+                            reportedByMap[name] = reportedBy;
+                        }
+                    });
+                }
 
                 if (result.success && Array.isArray(result.data)) {
                     // Skip header row (index 0), map each row to an object using user-specified column indices
@@ -47,15 +62,23 @@ const AdminHistoryCommitment = () => {
                         nextWeekCommitment: row[16] || "" // Column Q (index 16)
                     })).filter(r => r.name.trim() !== "");
 
-                    // Filter based on role
-                    const finalRecords = user && user.role === 'admin'
+                    const isAdmin = user && (user.role === 'admin' || user.role === 'superadmin');
+                    const lowerName = (user?.name || "").toLowerCase().trim();
+                    const lowerId = (user?.id || "").toLowerCase().trim();
+
+                    // Filter based on role (Admin/Superadmin sees all, HOD sees self + reportees, Ordinary User sees self only)
+                    const finalRecords = isAdmin
                         ? parsed
-                        : parsed.filter(r => r.name.toLowerCase() === (user?.name || "").toLowerCase());
+                        : parsed.filter(r => {
+                            const empLowerName = r.name.toLowerCase().trim();
+                            const empManager = reportedByMap[empLowerName] || "";
+                            return empLowerName === lowerName || empManager === lowerName || empManager === lowerId;
+                          });
 
                     setRecords(finalRecords);
                 }
             } catch (error) {
-                console.error("Error fetching Records sheet:", error);
+                console.error("Error fetching Records & Master sheet:", error);
             } finally {
                 setLoading(false);
             }

@@ -76,9 +76,10 @@ const AdminLayout = () => {
             >
               {sidebarOpen ? <X size={20} className="sm:w-6 sm:h-6" /> : <Menu size={20} className="sm:w-6 sm:h-6" />}
             </button>
-            <Link to={user?.role === 'admin' ? '/admin/dashboard' : '/user/dashboard'} className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <Link to={(user?.role === 'admin' || user?.role === 'superadmin') ? '/admin/dashboard' : '/user/dashboard'} className="flex items-center gap-2 sm:gap-3 min-w-0">
               <span className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-600 truncate">MIS</span>
-              <span className={`text-xs sm:text-sm text-white px-2 sm:px-3 py-1 rounded whitespace-nowrap uppercase ${user?.role === 'admin' ? 'bg-blue-600' : 'bg-green-600'
+              <span className={`text-xs sm:text-sm text-white px-2 sm:px-3 py-1 rounded whitespace-nowrap uppercase ${
+                user?.role === 'superadmin' ? 'bg-purple-600' : (user?.role === 'admin' ? 'bg-blue-600' : 'bg-green-600')
                 }`}>
                 {user?.role || 'USER'}
               </span>
@@ -186,7 +187,7 @@ const AdminLayout = () => {
           <div className="h-full overflow-y-auto mobile-scroll">
             <nav className="p-4 sm:p-5 space-y-2">
               <Link
-                to={user?.role === 'admin' ? "/admin/dashboard" : "/user/dashboard"}
+                to={(user?.role === 'admin' || user?.role === 'superadmin') ? "/admin/dashboard" : "/user/dashboard"}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm sm:text-base font-medium ${(isActive('/admin/dashboard') || isActive('/user/dashboard'))
                     ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
@@ -208,7 +209,7 @@ const AdminLayout = () => {
                 <span className="truncate">Department</span>
               </Link> */}
               <Link
-                to={user?.role === 'admin' ? "/admin/history-commitment" : "/user/history-commitment"}
+                to={(user?.role === 'admin' || user?.role === 'superadmin') ? "/admin/history-commitment" : "/user/history-commitment"}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm sm:text-base font-medium ${(isActive('/admin/history-commitment') || isActive('/user/history-commitment'))
                     ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
@@ -241,7 +242,7 @@ const AdminLayout = () => {
                 <span className="truncate">Pending Tasks</span>
               </Link> */}
               <Link
-                to={user?.role === 'admin' ? "/admin/kpi-kra" : "/user/kpi-kra"}
+                to={(user?.role === 'admin' || user?.role === 'superadmin') ? "/admin/kpi-kra" : "/user/kpi-kra"}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 text-sm sm:text-base font-medium ${(isActive('/admin/kpi-kra') || isActive('/user/kpi-kra'))
                     ? 'bg-blue-50 text-blue-600 border-r-4 border-blue-600'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'

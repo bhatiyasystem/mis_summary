@@ -50,12 +50,17 @@ export function AuthProvider({ children }) {
 
               // Sync role as well from Column H (index 7)
               const rawRole = String(userRow[7] || "").trim().toLowerCase();
+              const userId = String(userRow[5] || "").trim().toLowerCase();
+              
               let syncedRole = prevUser.role;
-              if (rawRole === 'admin') syncedRole = 'admin';
+              if (userId === 'admin' || rawRole === 'superadmin') syncedRole = 'superadmin';
+              else if (rawRole === 'admin') syncedRole = 'admin';
               else if (rawRole === 'user') syncedRole = 'user';
 
-              if (freshImage !== prevUser.image || rowIndex !== prevUser.rowIndex || syncedRole !== prevUser.role) {
-                const updated = { ...prevUser, image: freshImage, rowIndex: rowIndex, role: syncedRole };
+              const freshReportedBy = userRow[9] || "";
+
+              if (freshImage !== prevUser.image || rowIndex !== prevUser.rowIndex || syncedRole !== prevUser.role || freshReportedBy !== prevUser.reportedBy) {
+                const updated = { ...prevUser, image: freshImage, rowIndex: rowIndex, role: syncedRole, reportedBy: freshReportedBy };
                 localStorage.setItem('mis_user', JSON.stringify(updated));
                 return updated;
               }
@@ -94,8 +99,8 @@ export function AuthProvider({ children }) {
       }
 
       if (usersData) {
-        // Data structure: [Name, Email, Dept, Designation, Profile, ID, Pass]
-        // Indices:        0     1      2     3            4        5   6
+        // Data structure: [Name, Email, Dept, Designation, Profile, ID, Pass, Role, ..., Reported By]
+        // Indices:        0     1      2     3            4        5   6     7             9
 
         // Find matching user (skip header row if it exists, but strict match handles it)
         const userRow = usersData.find(row =>
@@ -106,9 +111,12 @@ export function AuthProvider({ children }) {
           // Determine role based on Column H (index 7) or designation if H is empty
           const rawRole = String(userRow[7] || "").trim().toLowerCase();
           const designation = String(userRow[3]).toLowerCase();
+          const userId = String(userRow[5] || "").trim().toLowerCase();
 
           let role = 'user'; // Default
-          if (rawRole === 'admin') {
+          if (userId === 'admin' || rawRole === 'superadmin') {
+            role = 'superadmin';
+          } else if (rawRole === 'admin') {
             role = 'admin';
           } else if (rawRole === 'user') {
             role = 'user';
@@ -128,7 +136,8 @@ export function AuthProvider({ children }) {
             image: getDisplayableImageUrl(userRow[4]) || `https://ui-avatars.com/api/?name=${encodeURIComponent(userRow[0])}&background=0D8ABC&color=fff`,
             email: userRow[1],
             department: userRow[2],
-            designation: userRow[3]
+            designation: userRow[3],
+            reportedBy: userRow[9] || ""
           };
 
           setUser(verifiedUser);

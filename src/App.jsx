@@ -22,13 +22,15 @@ function App() {
     );
   }
 
+  const isAdminOrSuper = user && (user.role === 'admin' || user.role === 'superadmin');
+
   return (
     <Routes>
       <Route
         path="/login"
         element={
           user ? (
-            <Navigate to={user.role === 'admin' ? '/admin' : '/user'} replace />
+            <Navigate to={isAdminOrSuper ? '/admin' : '/user'} replace />
           ) : (
             <Login />
           )
@@ -72,7 +74,7 @@ function App() {
       <Route
         path="/"
         element={
-          <Navigate to={user ? (user.role === 'admin' ? '/admin' : '/user') : '/login'} replace />
+          <Navigate to={user ? (isAdminOrSuper ? '/admin' : '/user') : '/login'} replace />
         }
       />
 
@@ -97,8 +99,14 @@ function RequireAuth({ children, role }) {
     return <Navigate to="/login" replace />;
   }
 
-  if (role && user.role !== role) {
-    return <Navigate to={user.role === 'admin' ? '/admin' : '/user'} replace />;
+  const isAdminOrSuper = user.role === 'admin' || user.role === 'superadmin';
+
+  if (role === 'admin' && !isAdminOrSuper) {
+    return <Navigate to="/user" replace />;
+  }
+
+  if (role === 'user' && user.role !== 'user' && !isAdminOrSuper) {
+    return <Navigate to="/login" replace />;
   }
 
   return children;
