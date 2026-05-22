@@ -642,7 +642,9 @@ const AdminDashboard = () => {
       workNotDone: row[12] || 0,
       workNotDoneOnTime: row[13] || 0,
       allPendingTillDate: row[14] || 0,
-      delayColRef: row[27] || ""
+      delayColRef: row[27] || "",
+      fromDate: row[21] || "", // Column V
+      toDate: row[22] || ""    // Column W
     }));
 
     setSelectedUserDetails({ ...employee, tasks });
@@ -710,9 +712,36 @@ const AdminDashboard = () => {
       if (delayParsed?.sheetName) sheetsToFetch.add(delayParsed.sheetName);
 
       const fetchPromises = [...sheetsToFetch].map(async (name) => {
-        const res = await fetch(`${scriptUrl}?sheet=${encodeURIComponent(name)}`);
-        const result = await res.json();
-        sheetDataCache[name] = (result.success && Array.isArray(result.data)) ? result.data : [];
+        // Skip department-specific scriptUrl — it's CORS-blocked from localhost.
+        // Always use the global VITE_APPS_SCRIPT_URL with spreadsheetId directly.
+        const urlsToTry = [import.meta.env.VITE_APPS_SCRIPT_URL]
+          .map(u => String(u || "").trim())
+          .filter(u => u.startsWith("http"));
+        
+        let success = false;
+        for (const url of urlsToTry) {
+          try {
+            const separator = url.includes('?') ? '&' : '?';
+            let fetchUrl = `${url}${separator}sheet=${encodeURIComponent(name)}`;
+            if (task.sheetId) {
+              fetchUrl += `&spreadsheetId=${encodeURIComponent(task.sheetId)}`;
+            }
+            
+            const res = await fetch(fetchUrl);
+            if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+            const result = await res.json();
+            if (result.success && Array.isArray(result.data)) {
+              sheetDataCache[name] = result.data;
+              success = true;
+              break;
+            }
+          } catch (err) {
+            console.error(`Failed to fetch drill-down sheet ${name} using url ${url}:`, err);
+          }
+        }
+        if (!success) {
+          throw new Error(`Failed to fetch sheet ${name} from all attempted URLs`);
+        }
       });
       await Promise.all(fetchPromises);
 
@@ -828,18 +857,47 @@ const AdminDashboard = () => {
 
       const maxLen = Math.max(plannedValues.length, actualValues.length, taskNameValues.length);
       const rows = [];
+      
+      const parseFilterDate = (val) => {
+        if (!val) return null;
+        const str = String(val).trim();
+        // If it looks like dd/mm/yyyy or dd-mm-yyyy (potentially with time)
+        const datePart = str.split(' ')[0];
+        const parts = datePart.split(/[-/]/);
+        if (parts.length === 3 && parts[2].length === 4) {
+           return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+        const d = new Date(str);
+        return isNaN(d.getTime()) ? null : d;
+      };
+
+      const filterFrom = parseFilterDate(task.fromDate);
+      const filterTo = parseFilterDate(task.toDate);
+      if (filterTo) filterTo.setHours(23, 59, 59, 999);
+
       for (let i = 0; i < maxLen; i++) {
         const plannedVal = plannedValues[i] || "";
         const actualVal = actualValues[i] || "";
         const delayVal = delayValues[i] || "";
+        
         // Include all rows that have at least a planned date
         if (plannedVal) {
-          rows.push({
-            taskName: taskNameValues[i] || "",
-            planned: plannedVal,
-            actual: actualVal,
-            delay: delayVal
-          });
+          let inRange = true;
+          const pDate = parseFilterDate(plannedVal);
+          
+          if (pDate) {
+            if (filterFrom && pDate < filterFrom) inRange = false;
+            if (filterTo && pDate > filterTo) inRange = false;
+          }
+
+          if (inRange) {
+            rows.push({
+              taskName: taskNameValues[i] || "",
+              planned: plannedVal,
+              actual: actualVal,
+              delay: delayVal
+            });
+          }
         }
       }
 
@@ -1037,6 +1095,7 @@ Acemark Stationers.`;
         topBestPerformers={topBestPerformers}
         pendingTasks={sortedPendingList}
         departmentScores={departmentScores}
+        dataSheetRows={dataSheetRows}
       />
 
       {/* Employee List */}
