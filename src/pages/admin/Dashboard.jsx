@@ -852,7 +852,7 @@ const AdminDashboard = () => {
 
       const plannedValues = getColumnValues(plannedParsed);
       const actualValues = getColumnValues(actualParsed);
-      const taskNameValues = getColumnValues(taskNameParsed);
+      const taskNameValues = getColumnValues(taskNameParsed, (val) => (val === undefined || val === null) ? "" : String(val));
       const delayValues = getColumnValues(delayParsed, formatDurationValue);
 
       const maxLen = Math.max(plannedValues.length, actualValues.length, taskNameValues.length);
