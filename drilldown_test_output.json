@@ -60,6 +60,11 @@
     "actual": ""
   },
   {
+    "taskName": "Take printout consignee credit note of MP or distributor",
+    "planned": "2026-05-23 11:00:00",
+    "actual": ""
+  },
+  {
     "taskName": "Weekly labor payment",
     "planned": "2026-02-24 0:00:00",
     "actual": "2026-02-26 7:47:56"
@@ -107,6 +112,11 @@
   {
     "taskName": "Weekly labor payment",
     "planned": "2026-05-19 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Weekly labor payment",
+    "planned": "2026-05-26 0:00:00",
     "actual": ""
   },
   {
@@ -377,6 +387,26 @@
   {
     "taskName": "Production bhatagoan",
     "planned": "2026-05-21 18:30:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Production bhatagoan",
+    "planned": "2026-05-22 18:30:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Production bhatagoan",
+    "planned": "2026-05-23 18:30:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Production bhatagoan",
+    "planned": "2026-05-25 18:30:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Production bhatagoan",
+    "planned": "2026-05-26 18:30:00",
     "actual": ""
   },
   {
@@ -655,6 +685,26 @@
     "actual": ""
   },
   {
+    "taskName": "production Raipura",
+    "planned": "2026-05-22 11:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "production Raipura",
+    "planned": "2026-05-23 11:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "production Raipura",
+    "planned": "2026-05-25 11:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "production Raipura",
+    "planned": "2026-05-26 11:00:00",
+    "actual": ""
+  },
+  {
     "taskName": "Daily Material Received Raipura",
     "planned": "2026-02-24 11:00:00",
     "actual": "2026-02-26 7:47:56"
@@ -922,6 +972,26 @@
   {
     "taskName": "Daily Material Received Raipura",
     "planned": "2026-05-21 11:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Daily Material Received Raipura",
+    "planned": "2026-05-22 11:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Daily Material Received Raipura",
+    "planned": "2026-05-23 11:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Daily Material Received Raipura",
+    "planned": "2026-05-25 11:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Daily Material Received Raipura",
+    "planned": "2026-05-26 11:00:00",
     "actual": ""
   },
   {
@@ -1200,6 +1270,26 @@
     "actual": ""
   },
   {
+    "taskName": "Daily Material Received Bhatagoan",
+    "planned": "2026-05-23 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Daily Material Received Bhatagoan",
+    "planned": "2026-05-25 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Daily Material Received Bhatagoan",
+    "planned": "2026-05-26 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Daily Material Received Bhatagoan",
+    "planned": "2026-05-27 0:00:00",
+    "actual": ""
+  },
+  {
     "taskName": "Machine status bhatagoan -104 BT",
     "planned": "2026-02-24 0:00:00",
     "actual": "2026-02-26 7:47:56"
@@ -1475,6 +1565,26 @@
     "actual": ""
   },
   {
+    "taskName": "Machine status bhatagoan -104 BT",
+    "planned": "2026-05-23 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status bhatagoan -104 BT",
+    "planned": "2026-05-25 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status bhatagoan -104 BT",
+    "planned": "2026-05-26 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status bhatagoan -104 BT",
+    "planned": "2026-05-27 0:00:00",
+    "actual": ""
+  },
+  {
     "taskName": "Machine status bhatagoan -91 BT",
     "planned": "2026-02-24 0:00:00",
     "actual": "2026-02-26 7:47:56"
@@ -1742,6 +1852,26 @@
   {
     "taskName": "Machine status bhatagoan -91 BT",
     "planned": "2026-05-21 18:30:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status bhatagoan -91 BT",
+    "planned": "2026-05-22 18:30:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status bhatagoan -91 BT",
+    "planned": "2026-05-23 18:30:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status bhatagoan -91 BT",
+    "planned": "2026-05-25 18:30:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status bhatagoan -91 BT",
+    "planned": "2026-05-26 18:30:00",
     "actual": ""
   },
   {
@@ -2020,6 +2150,26 @@
     "actual": ""
   },
   {
+    "taskName": "Machine status Raipura -R91",
+    "planned": "2026-05-23 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status Raipura -R91",
+    "planned": "2026-05-25 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status Raipura -R91",
+    "planned": "2026-05-26 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status Raipura -R91",
+    "planned": "2026-05-27 0:00:00",
+    "actual": ""
+  },
+  {
     "taskName": "Machine status  Raipura -R91 R",
     "planned": "2026-02-24 0:00:00",
     "actual": "2026-02-26 7:47:56"
@@ -2295,6 +2445,26 @@
     "actual": ""
   },
   {
+    "taskName": "Machine status  Raipura -R91 R",
+    "planned": "2026-05-23 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status  Raipura -R91 R",
+    "planned": "2026-05-25 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status  Raipura -R91 R",
+    "planned": "2026-05-26 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Machine status  Raipura -R91 R",
+    "planned": "2026-05-27 0:00:00",
+    "actual": ""
+  },
+  {
     "taskName": "Weekly labor payment",
     "planned": "2026-03-02 18:30:00",
     "actual": "2026-03-03 4:51:54"
@@ -2402,6 +2572,11 @@
   {
     "taskName": "Weekly performance score ab aapke dashboard me visible hai. Kripya har Monday EM ke liye iska printout nikal ke dilip sir ko dikhaiye, Agar Sir available na ho to kindly unhe call kar lein.",
     "planned": "2026-05-18 0:00:00",
+    "actual": ""
+  },
+  {
+    "taskName": "Weekly performance score ab aapke dashboard me visible hai. Kripya har Monday EM ke liye iska printout nikal ke dilip sir ko dikhaiye, Agar Sir available na ho to kindly unhe call kar lein.",
+    "planned": "2026-05-25 0:00:00",
     "actual": ""
   }
 ]

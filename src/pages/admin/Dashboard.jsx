@@ -50,6 +50,7 @@ const AdminDashboard = () => {
   const [sheetEmployees, setSheetEmployees] = useState([]);
   const [departmentScores, setDepartmentScores] = useState([]);
   const [dataSheetRows, setDataSheetRows] = useState([]);
+  const [dataSheetDateRange, setDataSheetDateRange] = useState({ fromDate: "", toDate: "" });
 
   // Dynamic Column Labels
   const [columnLabels, setColumnLabels] = useState({
@@ -220,6 +221,12 @@ const AdminDashboard = () => {
         // Store Data sheet rows (skip header row)
         if (dataResult.success && Array.isArray(dataResult.data)) {
           setDataSheetRows(dataResult.data.slice(1));
+          // Column V (index 21) and W (index 22) in header row contain global date range
+          const headerRow = dataResult.data[0] || [];
+          const globalFromDate = headerRow[21] ? String(headerRow[21]).trim() : "";
+          const globalToDate = headerRow[22] ? String(headerRow[22]).trim() : "";
+          setDataSheetDateRange({ fromDate: globalFromDate, toDate: globalToDate });
+          console.log("[Data Sheet] Global Date Range from header → V:", globalFromDate, "W:", globalToDate);
         }
 
         // Store Department Scores
@@ -643,8 +650,9 @@ const AdminDashboard = () => {
       workNotDoneOnTime: row[13] || 0,
       allPendingTillDate: row[14] || 0,
       delayColRef: row[27] || "",
-      fromDate: row[21] || "", // Column V
-      toDate: row[22] || ""    // Column W
+      // fromDate/toDate: individual rows are empty; use global date range from header row (Col V/W)
+      fromDate: (row[21] && String(row[21]).trim()) || dataSheetDateRange.fromDate, // Column V (falls back to header value)
+      toDate: (row[22] && String(row[22]).trim()) || dataSheetDateRange.toDate       // Column W (falls back to header value)
     }));
 
     setSelectedUserDetails({ ...employee, tasks });
@@ -859,21 +867,50 @@ const AdminDashboard = () => {
       const rows = [];
       
       const parseFilterDate = (val) => {
-        if (!val) return null;
+        if (val === null || val === undefined || val === "") return null;
+        
+        // Handle Google Sheets numeric serial date (e.g., 46200)
+        const numVal = Number(val);
+        if (!isNaN(numVal) && numVal > 1000 && numVal < 100000) {
+          // Google Sheets epoch: Dec 30, 1899
+          const epoch = new Date(Date.UTC(1899, 11, 30));
+          return new Date(epoch.getTime() + numVal * 24 * 60 * 60 * 1000);
+        }
+        
         const str = String(val).trim();
-        // If it looks like dd/mm/yyyy or dd-mm-yyyy (potentially with time)
+        
+        // ISO format: 2026-05-19 or 2026-05-19T... 
+        if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+          const isoDatePart = str.split('T')[0].split(' ')[0];
+          const parts = isoDatePart.split('-');
+          if (parts.length >= 3) {
+            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          }
+        }
+        
+        // dd/mm/yyyy or dd-mm-yyyy (with optional time)
         const datePart = str.split(' ')[0];
         const parts = datePart.split(/[-/]/);
-        if (parts.length === 3 && parts[2].length === 4) {
-           return new Date(parts[2], parts[1] - 1, parts[0]);
+        if (parts.length === 3) {
+          if (parts[2].length === 4) {
+            // dd/mm/yyyy
+            return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+          }
+          if (parts[0].length === 4) {
+            // yyyy/mm/dd
+            return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+          }
         }
+        
         const d = new Date(str);
         return isNaN(d.getTime()) ? null : d;
       };
 
+      console.log("[DrillDown Filter] fromDate raw:", task.fromDate, "| toDate raw:", task.toDate);
       const filterFrom = parseFilterDate(task.fromDate);
       const filterTo = parseFilterDate(task.toDate);
       if (filterTo) filterTo.setHours(23, 59, 59, 999);
+      console.log("[DrillDown Filter] filterFrom:", filterFrom, "| filterTo:", filterTo);
 
       for (let i = 0; i < maxLen; i++) {
         const plannedVal = plannedValues[i] || "";

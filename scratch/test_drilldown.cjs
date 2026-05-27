@@ -13,44 +13,41 @@ async function testDrillDown() {
     return;
   }
 
-  const dataRows = dataResult.data;
-  console.log(`Fetched ${dataRows.length} rows from Master Data sheet.`);
+  const headerRow = dataResult.data[0] || [];
+  const globalFromDate = headerRow[21] ? String(headerRow[21]).trim() : "";
+  const globalToDate = headerRow[22] ? String(headerRow[22]).trim() : "";
+  console.log(`Global Date Range from Header: From "${globalFromDate}" To "${globalToDate}"`);
 
-  // Find the task for Ayush Satimade
-  const targetEmployee = "Ayush Satimade";
+  const dataRows = dataResult.data;
+  
+  // Find the task for Afroj Begam
+  const targetEmployee = "Afroj Begam";
   let targetRow = null;
 
-  // Header is row 0, data starts at row 1
   for (let i = 1; i < dataRows.length; i++) {
     const row = dataRows[i];
-    const dataName = String(row[4] || "").trim(); // Column E is Person Name in mapping? Wait, handleRowClick maps row[4]
+    const dataName = String(row[4] || "").trim();
     if (dataName === targetEmployee && String(row[3]).includes("Checklist Task")) {
       targetRow = row;
       break;
     }
   }
 
-  if (!targetRow) {
-    console.error("Could not find Checklist Task for Ayush Satimade");
-    return;
-  }
+  if (!targetRow) return;
 
-  console.log("\n2. Found Target Row in Master Data Sheet:");
-  console.log(`FMS Name: ${targetRow[2]}`);
-  console.log(`Task Name: ${targetRow[3]}`);
+  const fmsSheetId = targetRow[5]; 
+  const plannedSheetRef = targetRow[7]; 
+  const actualSheetRef = targetRow[8]; 
+  const nameColRef = targetRow[9]; 
+  const taskNameColRef = targetRow[26]; 
+  // Simulate logic from Dashboard.jsx
+  const fromDateRaw = String(targetRow[21] || "").trim();
+  const toDateRaw = String(targetRow[22] || "").trim();
   
-  const fmsSheetId = targetRow[5]; // Column F
-  const plannedSheetRef = targetRow[7]; // Column H
-  const actualSheetRef = targetRow[8]; // Column I
-  const nameColRef = targetRow[9]; // Column J
-  const taskNameColRef = targetRow[26]; // Column AA
-  const fromDate = targetRow[21]; // Column V
-  const toDate = targetRow[22]; // Column W
+  const fromDate = fromDateRaw || globalFromDate;
+  const toDate = toDateRaw || globalToDate;
 
-  console.log(`FMS Sheet ID: ${fmsSheetId}`);
-  console.log(`Planned Sheet Ref: ${plannedSheetRef}`);
-  console.log(`Name Col Ref: ${nameColRef}`);
-  console.log(`Date Range: From ${fromDate} To ${toDate}`);
+  console.log(`\nTask Data: Name=${targetRow[4]}, fromDate="${fromDate}", toDate="${toDate}"`);
 
   const parseSheetRef = (ref) => {
     if (!ref) return null;
@@ -75,30 +72,29 @@ async function testDrillDown() {
   const aRef = parseSheetRef(actualSheetRef);
   const tRef = parseSheetRef(taskNameColRef);
 
-  if (!pRef || !nRef) {
-    console.error("Invalid sheet references");
-    return;
-  }
-
   console.log(`\n3. Fetching FMS Sheet '${pRef.sheetName}' from Spreadsheet ID '${fmsSheetId}'...`);
   const fmsRes = await fetch(`${SCRIPT_URL}?sheet=${encodeURIComponent(pRef.sheetName)}&spreadsheetId=${encodeURIComponent(fmsSheetId)}`);
   const fmsResult = await fmsRes.json();
-
-  if (!fmsResult.success) {
-    console.error("Failed to fetch FMS sheet");
-    return;
-  }
-
   const fmsRows = fmsResult.data;
   console.log(`Fetched ${fmsRows.length} rows from FMS sheet.`);
 
   const parseFilterDate = (val) => {
-    if (!val) return null;
+    if (val === null || val === undefined || val === "") return null;
+    const numVal = Number(val);
+    if (!isNaN(numVal) && numVal > 1000 && numVal < 100000) {
+      const epoch = new Date(Date.UTC(1899, 11, 30));
+      return new Date(epoch.getTime() + numVal * 24 * 60 * 60 * 1000);
+    }
     const str = String(val).trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+      const d = new Date(str);
+      return isNaN(d.getTime()) ? null : d;
+    }
     const datePart = str.split(' ')[0];
     const parts = datePart.split(/[-/]/);
-    if (parts.length === 3 && parts[2].length === 4) {
-       return new Date(parts[2], parts[1] - 1, parts[0]);
+    if (parts.length === 3) {
+      if (parts[2].length === 4) return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]));
+      if (parts[0].length === 4) return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
     }
     const d = new Date(str);
     return isNaN(d.getTime()) ? null : d;
@@ -108,7 +104,7 @@ async function testDrillDown() {
   const filterTo = parseFilterDate(toDate);
   if (filterTo) filterTo.setHours(23, 59, 59, 999);
 
-  console.log(`\n4. Filtering rows for '${targetEmployee}' and Date Range: ${filterFrom} to ${filterTo}`);
+  console.log(`[DrillDown Filter] filterFrom: ${filterFrom}, filterTo: ${filterTo}`);
 
   const drillDownRows = [];
   let totalPersonMatches = 0;
@@ -116,7 +112,6 @@ async function testDrillDown() {
   for (let i = nRef.startRowIndex; i < fmsRows.length; i++) {
     const row = fmsRows[i];
     if (!row) continue;
-
     const nameInSheet = String(row[nRef.colIndex] || "").trim();
     if (nameInSheet === targetEmployee) {
       totalPersonMatches++;
@@ -147,10 +142,6 @@ async function testDrillDown() {
   console.log(`\n[Results]`);
   console.log(`Total rows assigned to ${targetEmployee} in FMS: ${totalPersonMatches}`);
   console.log(`Total rows after applying Date Range Filter: ${drillDownRows.length}`);
-  console.log(`\nSample of filtered rows:`);
-  console.log(drillDownRows.slice(0, 3));
-  
-  fs.writeFileSync('drilldown_test_output.json', JSON.stringify(drillDownRows, null, 2));
 }
 
 testDrillDown();
