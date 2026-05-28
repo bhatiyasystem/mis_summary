@@ -560,13 +560,13 @@ const EmployeeListSection = ({
                                     <div className="mt-4 space-y-4 border-t border-gray-200 pt-4">
                                         <div className="grid grid-cols-2 gap-3 text-xs">
                                             <div className="bg-gray-50 p-2 rounded">
-                                                <p className="text-gray-500">Weekly Done</p>
+                                                <p className="text-gray-500">% Weekly Not Done</p>
                                                 <p className="font-semibold text-gray-900">
                                                     {employee.weeklyWorkDone}%
                                                 </p>
                                             </div>
                                             <div className="bg-gray-50 p-2 rounded">
-                                                <p className="text-gray-500">On Time</p>
+                                                <p className="text-gray-500">Weekly On Time Not Done %</p>
                                                 <p className="font-semibold text-gray-900">
                                                     {employee.weeklyWorkDoneOnTime}%
                                                 </p>

@@ -145,7 +145,7 @@ const UserDetailsModal = ({
 
                         .stats-grid {
                             display: grid;
-                            grid-template-columns: repeat(4, 1fr);
+                            grid-template-columns: repeat(3, 1fr);
                             gap: 12px;
                             margin-bottom: 25px;
                         }
@@ -303,15 +303,11 @@ const UserDetailsModal = ({
 
                         <div class="stats-grid">
                             <div class="stat-item">
-                                <span class="stat-label">Performance Score</span>
-                                <span class="stat-value highlight">${selectedUserDetails.score || 0}%</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Weekly Done</span>
+                                <span class="stat-label">Weekly Not Done %</span>
                                 <span class="stat-value">${formatPercent(selectedUserDetails.weeklyWorkDone)}</span>
                             </div>
                             <div class="stat-item">
-                                <span class="stat-label">On-Time %</span>
+                                <span class="stat-label">Weekly Not Done On-Time %</span>
                                 <span class="stat-value">${formatPercent(selectedUserDetails.weeklyWorkDoneOnTime)}</span>
                             </div>
                             <div class="stat-item">
@@ -326,11 +322,11 @@ const UserDetailsModal = ({
                                 <tr>
                                     <th>FMS & TASK DESCRIPTION</th>
                                     <th class="num-col">TARGET</th>
-                                    <th class="num-col">ACTUAL</th>
-                                    <th class="num-col">DONE %</th>
-                                    <th class="num-col">LATE %</th>
-                                    <th class="num-col red-header">PLANNED NOT DONE</th>
-                                    <th class="num-col red-header">PLANNED LATE %</th>
+                                    <th class="num-col">ACTUAL WORK DONE</th>
+                                    <th class="num-col">WORK NOT DONE %</th>
+                                    <th class="num-col">WORK NOT DONE ON TIME%</th>
+                                    <th class="num-col red-header">PLANNED % WORK NOT DONE</th>
+                                    <th class="num-col red-header">PLANNED % WORK NOT DONE ON TIME</th>
                                     <th class="num-col red-header">COMMITMENT</th>
                                 </tr>
                             </thead>

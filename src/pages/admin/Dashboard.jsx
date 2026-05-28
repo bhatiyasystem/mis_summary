@@ -58,8 +58,8 @@ const AdminDashboard = () => {
     designation: "Designation",
     target: "Target",
     actualWork: "Actual Work",
-    weeklyDone: "Weekly Done %",
-    weeklyOnTime: "Weekly On Time %",
+    weeklyDone: "Weekly Not Done %",
+    weeklyOnTime: "Weekly On Time Not Done %",
     totalWork: "Total Work",
     weekPending: "Week Pending",
     allPending: "All Pending"
@@ -325,8 +325,8 @@ const AdminDashboard = () => {
               designation: headers[3] || prev.designation,
               target: headers[3] || prev.target,
               actualWork: headers[4] || prev.actualWork,
-              weeklyDone: headers[5] || prev.weeklyDone,
-              weeklyOnTime: headers[6] || prev.weeklyOnTime,
+              weeklyDone: "% Weekly Not Done",
+              weeklyOnTime: "Weekly On Time Not Done %",
               totalWork: headers[7] || prev.totalWork,
               weekPending: headers[8] || prev.weekPending,
               allPending: headers[9] || prev.allPending
@@ -358,6 +358,7 @@ const AdminDashboard = () => {
                 department: "",
                 image: finalImageUrl,
 
+                score: row[5] || 0,       // Column F (index 5) - Weekly Work Done %
                 target: row[3] || 0,
                 actualWorkDone: row[4] || 0,
                 weeklyWorkDone: row[5] || "0%",
@@ -1030,8 +1031,8 @@ Here is your performance summary:
 
 📌 Target: ${emp.target}  
 ✅ Actual Work Done: ${emp.actualWorkDone}  
-📈 % Weekly Done: ${emp.weeklyWorkDone}%  
-⏱ Weekly On Time %: ${emp.weeklyWorkDoneOnTime}%  
+📈 % Weekly Not Done: ${emp.weeklyWorkDone}%  
+⏱ Weekly On Time Not Done %: ${emp.weeklyWorkDoneOnTime}%  
 
 📊 Total Work Done: ${emp.totalWorkDone}  
 📉 Week Pending: ${emp.weekPending}  
