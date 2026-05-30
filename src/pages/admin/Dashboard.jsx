@@ -354,7 +354,7 @@ const AdminDashboard = () => {
                 name: empName,
                 startDate: row[10] || "", // Column K (index 10)
                 endDate: row[11] || "",   // Column L (index 11)
-                designation: designationMap[normalizedName] || row[3] || "N/A",
+                designation: designationMap[normalizedName] || "",
                 department: "",
                 image: finalImageUrl,
 
