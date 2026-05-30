@@ -283,8 +283,8 @@ const UserDetailsModal = ({
                     <div class="report-container">
                         <div class="report-header">
                             <div class="brand">
-                                <h1 class="brand-name">ACEMARK</h1>
-                                <span class="brand-sub">STATIONERS & SYSTEMS</span>
+                                <h1 class="brand-name">BHATIYA</h1>
+                                
                             </div>
                             <div class="report-title-box">
                                 <h2 class="report-title">Employee Performance Audit</h2>
