@@ -283,7 +283,7 @@ const UserDetailsModal = ({
                     <div class="report-container">
                         <div class="report-header">
                             <div class="brand">
-                                <h1 class="brand-name">BHATIYA</h1>
+                                <h1 class="brand-name">BHATIYA ENTERPRISES</h1>
                                 
                             </div>
                             <div class="report-title-box">
